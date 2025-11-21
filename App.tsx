@@ -4,7 +4,7 @@ import FloatingText from './components/FloatingText';
 import MainPage from './components/MainPage';
 
 const App: React.FC = () => {
-  // --- 1. LOADING STATE (New Feature) ---
+  // --- 1. LOADING STATE ---
   const [isLoading, setIsLoading] = useState(true);
 
   // --- COVER / DRAG STATE ---
@@ -13,7 +13,6 @@ const App: React.FC = () => {
   const [dragOffset, setDragOffset] = useState(0);
   const [showMainContent, setShowMainContent] = useState(false);
   
-  // Track if the initial ascension animation (Dark Blue -> Cyan) has completed
   const [hasAscended, setHasAscended] = useState(false);
   
   // --- PAGE NAVIGATION STATE ---
@@ -31,14 +30,12 @@ const App: React.FC = () => {
 
   // --- EFFECTS: FONT LOADING CHECK ---
   useEffect(() => {
-    // 创建两个 Promise：
-    // 1. 等待所有字体加载完成
     const fontPromise = document.fonts.ready;
-    // 2. 强制等待至少 1 秒 (让 loading 画面展示一会，避免闪烁)
-    const minTimePromise = new Promise(resolve => setTimeout(resolve, 1000));
+    // 稍微缩短一点强制等待时间，让感觉更干脆
+    const minTimePromise = new Promise(resolve => setTimeout(resolve, 800));
 
     Promise.all([fontPromise, minTimePromise]).then(() => {
-      setIsLoading(false); // 两个都完成后，取消 Loading 状态
+      setIsLoading(false);
     });
   }, []);
 
@@ -113,10 +110,9 @@ const App: React.FC = () => {
     };
   }, [showMainContent, handleNextPage, handlePrevPage]);
 
-
   // --- DRAG HANDLERS ---
   const handlePointerDown = (e: React.PointerEvent) => {
-    if (!e.isPrimary || isLoading) return; // Loading 时禁止交互
+    if (!e.isPrimary || isLoading) return; 
     isPointerDown.current = true;
     startY.current = e.clientY;
     (e.target as Element).setPointerCapture(e.pointerId);
@@ -211,17 +207,17 @@ const App: React.FC = () => {
   return (
     <main className="relative w-full h-screen overflow-hidden bg-anime-abyss font-sans">
       
-      {/* --- 0. LOADING OVERLAY (P3R Style) --- */}
+      {/* --- 0. LOADING OVERLAY (Neon Green Style) --- */}
       <div 
-        className={`fixed inset-0 z-[9999] bg-anime-abyss flex flex-col items-center justify-center transition-opacity duration-1000 ${isLoading ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center transition-opacity duration-700 ${isLoading ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
       >
         <div className="relative">
-           {/* P3R 风格的加载圆圈 */}
-           <div className="w-16 h-16 border-4 border-anime-sky/30 border-t-anime-cyan rounded-full animate-spin mb-6"></div>
-           {/* 装饰性的背景发光 */}
-           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-anime-cyan/10 blur-xl rounded-full"></div>
+           {/* 荧光绿加载圈 */}
+           <div className="w-16 h-16 border-4 border-[#39FF14]/20 border-t-[#39FF14] rounded-full animate-spin mb-6 shadow-[0_0_15px_rgba(57,255,20,0.5)]"></div>
+           {/* 荧光绿发光背景 */}
+           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-[#39FF14]/10 blur-xl rounded-full"></div>
         </div>
-        <h2 className="font-michroma text-anime-cyan tracking-[0.3em] text-sm animate-pulse">
+        <h2 className="font-michroma text-[#39FF14] tracking-[0.3em] text-sm animate-pulse drop-shadow-[0_0_5px_rgba(57,255,20,0.8)]">
           SYSTEM INITIALIZING...
         </h2>
       </div>
@@ -242,7 +238,9 @@ const App: React.FC = () => {
       >
         <div className="absolute top-0 left-0 w-full h-[50vh] bg-[#0088FF] -translate-y-full pointer-events-none" />
         <div className="relative w-full h-full bg-[#001166]">
+            {/* 水下背景一直存在，不需要重置 */}
             <UnderwaterBackground />
+            
             <div 
               className="absolute bottom-0 left-0 w-full h-[20%] z-[200]"
               onPointerDown={handlePointerDown}
@@ -259,10 +257,18 @@ const App: React.FC = () => {
          className="absolute inset-0 z-[300] pointer-events-none"
          style={containerStyle}
       >
-         <FloatingText 
-             labelText={labelText} 
-             hideLabel={isDragging || isDismissed} 
-         />
+         {/* 
+            关键修改：
+            只有当 isLoading 变为 false 后，才开始渲染 FloatingText。
+            这样 FloatingText 内部的物理引擎（文字下落动画）就会从这一刻开始重置播放，
+            刚好卡在 Loading 界面消失的点上。
+         */}
+         {!isLoading && (
+            <FloatingText 
+                labelText={labelText} 
+                hideLabel={isDragging || isDismissed} 
+            />
+         )}
       </div>
 
     </main>
