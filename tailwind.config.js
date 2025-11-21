@@ -3,7 +3,7 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
-    "./*.{js,ts,jsx,tsx}", // 包含根目录下的文件
+    "./*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}"
   ],
   theme: {
@@ -11,14 +11,15 @@ export default {
       colors: {
         anime: {
           white: '#FFFFFF',
-          cyan: '#2DFDFF', // P3R Cyan
+          cyan: '#2DFDFF',
           sky: '#4FB0E5',
           blue: '#0077BE',
-          deep: '#001144', // P3R Deep Blue
+          deep: '#001144',
           abyss: '#000510',
         }
       },
       fontFamily: {
+        // 注意这里的写法，确保带空格的字体名有双引号包裹
         sans: ['Inter', 'sans-serif'],
         michroma: ['Michroma', 'sans-serif'],
         silkscreen: ['Silkscreen', 'cursive'],
