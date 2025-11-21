@@ -1,7 +1,7 @@
 <div align="center">
-  <h1>🌊 XIAOXUNGE's Portfolio</h1>
+  <h1> XIAOXUNGE's Portfolio</h1>
   <p>
-    <strong>Persona 3 Reload Inspired Aesthetics</strong><br>
+    <strong>THE DESIGN LANGAGE COMES FROM PERSONA3</strong><br>
     Built with React + TypeScript + Tailwind CSS
   </p>
   
